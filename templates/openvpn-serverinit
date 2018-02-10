@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# Generate certificates for OpenVPN using easy-rsa in one command.
+#
+# This assumes it is being run relative to the easyrsa script by default.
+
+set -ex
+
+EASYRSA="./easyrsa --batch"
+SERVER_NAME=server
+
+if [ ! -d "./pki" ] ; then
+	$EASYRSA init-pki
+fi
+
+if [ ! -f "./pki/dh.pem" ] ; then
+	$EASYRSA gen-dh
+fi
+
+if [ ! -f "./pki/serial" ] ; then
+	$EASYRSA build-ca nopass
+fi
+
+if [ ! -f "./pki/issued/server.crt" ] ; then
+	$EASYRSA build-server-full $SERVER_NAME nopass
+fi
+
+if [ ! -f "./pki/private/ta.key" ] ; then
+	openvpn --genkey --secret pki/private/ta.key
+fi

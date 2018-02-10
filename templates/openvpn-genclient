@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Generate client certificates and keys for OpenVPN using easy-rsa.
+#
+# This assumes it is being run relative to the easyrsa script by default.
+#
+# It takes on argument, which is used as the CN for the client cert.
+
+set -ex
+
+EASYRSA="./easyrsa --batch"
+CLIENT_NAME="$1"
+
+$EASYRSA build-client-full $CLIENT_NAME nopass
+

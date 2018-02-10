@@ -1,0 +1,88 @@
+---
+
+- name: Install me an openvpn
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - openvpn
+    - easy-rsa
+
+
+# Server setup and config
+# -------------------------------------
+
+- name: Add a server config
+  template:
+    src: server.conf
+    dest: /etc/openvpn/server.conf
+  notify:
+    - restart openvpn
+
+- name: Copy easy_rsa to right place
+  command: cp -r /usr/share/easy-rsa/3.0/ /etc/openvpn/easy-rsa/
+  args:
+    creates: /etc/openvpn/easy-rsa/easyrsa
+
+- name: Add our all-in-one server setup script
+  template:
+    src: openvpn-serverinit
+    dest: /usr/sbin/openvpn-serverinit
+    mode: 0755
+
+- name: Add easy_rsa vars
+  template:
+    src: easy_rsa_vars
+    dest: /etc/openvpn/easy-rsa/vars
+
+- name: Generate certificates and keys for server
+  command: /usr/sbin/openvpn-serverinit
+  args:
+    chdir: /etc/openvpn/easy-rsa/
+    creates: /etc/openvpn/easy-rsa/pki/private/server.key
+  notify:
+    - restart openvpn
+
+
+# Client configs
+# -------------------------------------
+
+- name: Add our all-in-one client generation script
+  template:
+    src: openvpn-genclient
+    dest: /usr/sbin/openvpn-genclient
+    mode: 0755
+
+- include_tasks: add_client.yml
+  with_items: "{{ openvpn_client_names }}"
+
+
+# System stuff
+# -------------------------------------
+
+- name: Allow NAT forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    state: present
+    reload: yes
+
+- name: Allow OpenVPN through firewall
+  firewalld:
+    service: openvpn
+    state: enabled
+    immediate: yes
+    permanent: yes
+
+- name: Allow NAT masquerade through firewall
+  firewalld:
+    masquerade: yes
+    state: enabled
+    permanent: true
+    immediate: yes
+
+- name: Enable and start OpenVPN
+  service:
+    name: openvpn@server
+    state: started
+    enabled: yes

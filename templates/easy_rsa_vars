@@ -1,0 +1,8 @@
+export KEY_COUNTRY="CA"
+export KEY_PROVINCE="QC"
+export KEY_CITY="Montreal"
+export KEY_ORG="BlackieOps"
+export KEY_EMAIL="support@blackieops.com"
+export KEY_CN=roadwarrior1.blackieops.net
+export KEY_NAME=server
+export KEY_OU=server

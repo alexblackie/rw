@@ -2,3 +2,12 @@
 
 openvpn_client_names:
   - client1
+
+openvpn_country: CY
+openvpn_province: BER
+openvpn_city: CyberCity
+openvpn_org: OpenVPN
+openvpn_email: openvpn@example.com
+openvpn_cn: openvpn
+openvpn_name: server
+openvpn_ou: server

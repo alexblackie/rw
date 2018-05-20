@@ -1,8 +1,8 @@
-export KEY_COUNTRY="CA"
-export KEY_PROVINCE="QC"
-export KEY_CITY="Montreal"
-export KEY_ORG="BlackieOps"
-export KEY_EMAIL="support@blackieops.com"
-export KEY_CN=roadwarrior1.blackieops.net
-export KEY_NAME=server
-export KEY_OU=server
+export KEY_COUNTRY="{{ openvpn_country }}"
+export KEY_PROVINCE="{{ openvpn_province }}"
+export KEY_CITY="{{ openvpn_city }}"
+export KEY_ORG="{{ openvpn_org }}"
+export KEY_EMAIL="{{ openvpn_email }}"
+export KEY_CN="{{ openvpn_cn }}"
+export KEY_NAME="{{ openvpn_name }}"
+export KEY_OU="{{ openvpn_ou }}"

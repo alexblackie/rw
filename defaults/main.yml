@@ -11,3 +11,5 @@ openvpn_email: openvpn@example.com
 openvpn_cn: openvpn
 openvpn_name: server
 openvpn_ou: server
+
+openvpn_port: 1194

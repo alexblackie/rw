@@ -2,11 +2,10 @@
 
 - name: Install me an openvpn
   yum:
-    name: "{{ item }}"
-    state: present
-  with_items:
+    name:
     - openvpn
     - easy-rsa
+    state: present
 
 
 # Server setup and config

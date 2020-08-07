@@ -1,45 +1,40 @@
-# BlackieOps RoadWarrior Gateway
+# RoadWarrior
 
-This configures an enroled machine to be an enforced IPv4 internet gateway for
-the connecting machine using OpenVPN.
+This configures an enroled machine to be an enforced IPv4 internet gateway for the connecting machine using OpenVPN.
 
-Only CentOS 7 is supported.
+Currently, only CentOS 7 is supported.
+
+(Previously known as "BlackieOps Roadwarrior Gateway")
 
 ## Usage
 
 Add this repo as a submodule:
 
 ```
-$ git submodule add https://projects.blackieops.com/blackieops/roadwarrior_gateway.git roles/roadwarrior_gateway
+$ git submodule add https://github.com/alexblackie/rw.git roles/rw
 ```
 
 Then enrol your host group:
 
 ```
-- hosts: rws
+- hosts: all
   roles:
-    - roadwarrior_gateway
+  - rw
 ```
 
 ## Client Generation
 
-Clients are kept in the var `openvpn_client_names`, which is a YAML list of
-Common Name values to generate client keys/certs for. You can override this any
-number of ways, but the easiest is likely to just specify it in your playbook
-itself:
+Clients are kept in the var `openvpn_client_names`, which is a YAML list of Common Name values to generate client keys/certs for. You can override this any number of ways, but the easiest is likely to just specify it in your playbook itself:
 
 ```
-- hosts: rws
+- hosts: all
   vars:
     openvpn_client_names:
-      - laptop02
-      - edgep2p
-      - desktop01
+    - laptop02
+    - desktop01
+    - chad
   roles:
-    - roadwarrior_gateway
+  - rw
 ```
 
-Each entry in this list will create a folder under
-`/etc/openvpn/client/{{ name }}` with the client certificate, private key, CA
-certificate, TLS Auth key, and of course OpenVPN configuration. Simply `scp`
-this folder from the server and distribute it however you please.
+Each entry in this list will create a folder under `/etc/openvpn/client/{{ name }}` with the client certificate, private key, CA certificate, TLS Auth key, and of course OpenVPN configuration. Simply `scp` this folder from the server and distribute it however you please.

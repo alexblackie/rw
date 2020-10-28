@@ -4,6 +4,9 @@
   package:
     name: openvpn
     state: present
+  tags:
+  - rw
+  - packages
 
 - name: Grab easy-rsa
   unarchive:
@@ -12,11 +15,17 @@
     remote_src: yes
   args:
     creates: /tmp/EasyRSA-3.0.8
+  tags:
+  - rw
+  - pki
 
 - name: Move easy-rsa into place
   shell: mv /tmp/EasyRSA-3.0.8/ /etc/easy-rsa
   args:
     creates: /etc/easy-rsa/easyrsa
+  tags:
+  - rw
+  - pki
 
 # Server setup and config
 # -------------------------------------
@@ -27,17 +36,28 @@
     dest: /etc/openvpn/server.conf
   notify:
   - restart openvpn
+  tags:
+  - rw
+  - config
 
 - name: Add our all-in-one server setup script
   template:
     src: openvpn-serverinit
     dest: /usr/sbin/openvpn-serverinit
     mode: 0755
+  tags:
+  - rw
+  - config
+  - pki
 
 - name: Add easy_rsa vars
   template:
     src: easy_rsa_vars
     dest: /etc/easy-rsa/vars
+  tags:
+  - rw
+  - config
+  - pki
 
 - name: Generate certificates and keys for server
   command: /usr/sbin/openvpn-serverinit
@@ -46,6 +66,9 @@
     creates: /etc/easy-rsa/pki/private/server.key
   notify:
   - restart openvpn
+  tags:
+  - rw
+  - pki
 
 
 # Client configs
@@ -56,6 +79,9 @@
     src: openvpn-genclient
     dest: /usr/sbin/openvpn-genclient
     mode: 0755
+  tags:
+  - rw
+  - pki
 
 - include_tasks: add_client.yml
   with_items: "{{ openvpn_client_names }}"
@@ -70,6 +96,9 @@
     value: 1
     state: present
     reload: yes
+  tags:
+  - rw
+  - network
 
 - name: Allow OpenVPN through firewall
   firewalld:
@@ -77,6 +106,9 @@
     state: enabled
     immediate: yes
     permanent: yes
+  tags:
+  - rw
+  - network
 
 - name: Allow NAT masquerade through firewall
   firewalld:
@@ -84,9 +116,15 @@
     state: enabled
     permanent: yes
     immediate: yes
+  tags:
+  - rw
+  - network
 
 - name: Enable and start OpenVPN
   service:
     name: openvpn@server
     state: started
     enabled: yes
+  tags:
+  - rw
+  - service

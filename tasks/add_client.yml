@@ -4,11 +4,19 @@
   file:
     path: /etc/openvpn/client/{{ item }}
     state: directory
+  tags:
+  - rw
+  - add_client
+  - config
 
 - name: Add OpenVPN config for clients
   template:
     src: client.conf
     dest: /etc/openvpn/client/{{ item }}/{{ item }}.conf
+  tags:
+  - rw
+  - add_client
+  - config
 
 - name: Generate certificates for clients
   command: /usr/sbin/openvpn-genclient {{ item }}
@@ -21,21 +29,37 @@
     remote_src: yes
     src: /etc/easy-rsa/pki/private/ta.key
     dest: /etc/openvpn/client/{{ item }}/ta.key
+  tags:
+  - rw
+  - add_client
+  - config
 
 - name: Copy ca.crt for client bundle
   copy:
     remote_src: yes
     src: /etc/easy-rsa/pki/ca.crt
     dest: /etc/openvpn/client/{{ item }}/ca.crt
+  tags:
+  - rw
+  - add_client
+  - config
 
 - name: Copy client cert for client bundle
   copy:
     remote_src: yes
     src: /etc/easy-rsa/pki/issued/{{ item }}.crt
     dest: /etc/openvpn/client/{{ item }}/client.crt
+  tags:
+  - rw
+  - add_client
+  - config
 
 - name: Copy client key for client bundle
   copy:
     remote_src: yes
     src: /etc/easy-rsa/pki/private/{{ item }}.key
     dest: /etc/openvpn/client/{{ item }}/client.key
+  tags:
+  - rw
+  - add_client
+  - config

@@ -102,7 +102,7 @@
 
 - name: Allow OpenVPN through firewall
   firewalld:
-    service: openvpn
+    port: "{{ openvpn_port }}/udp"
     state: enabled
     immediate: yes
     permanent: yes

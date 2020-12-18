@@ -1,12 +1,22 @@
 ---
 
 - name: Install me an openvpn
-  yum:
-    name:
-    - openvpn
-    - easy-rsa
+  package:
+    name: openvpn
     state: present
 
+- name: Grab easy-rsa
+  unarchive:
+    src: https://github.com/OpenVPN/easy-rsa/releases/download/v3.0.8/EasyRSA-3.0.8.tgz
+    dest: /tmp
+    remote_src: yes
+  args:
+    creates: /tmp/EasyRSA-3.0.8
+
+- name: Move easy-rsa into place
+  shell: mv /tmp/EasyRSA-3.0.8/ /etc/easy-rsa
+  args:
+    creates: /etc/easy-rsa/easyrsa
 
 # Server setup and config
 # -------------------------------------
@@ -16,12 +26,7 @@
     src: server.conf
     dest: /etc/openvpn/server.conf
   notify:
-    - restart openvpn
-
-- name: Copy easy_rsa to right place
-  command: cp -r /usr/share/easy-rsa/3.0/ /etc/openvpn/easy-rsa/
-  args:
-    creates: /etc/openvpn/easy-rsa/easyrsa
+  - restart openvpn
 
 - name: Add our all-in-one server setup script
   template:
@@ -32,15 +37,15 @@
 - name: Add easy_rsa vars
   template:
     src: easy_rsa_vars
-    dest: /etc/openvpn/easy-rsa/vars
+    dest: /etc/easy-rsa/vars
 
 - name: Generate certificates and keys for server
   command: /usr/sbin/openvpn-serverinit
   args:
-    chdir: /etc/openvpn/easy-rsa/
-    creates: /etc/openvpn/easy-rsa/pki/private/server.key
+    chdir: /etc/easy-rsa/
+    creates: /etc/easy-rsa/pki/private/server.key
   notify:
-    - restart openvpn
+  - restart openvpn
 
 
 # Client configs
@@ -77,7 +82,7 @@
   firewalld:
     masquerade: yes
     state: enabled
-    permanent: true
+    permanent: yes
     immediate: yes
 
 - name: Enable and start OpenVPN

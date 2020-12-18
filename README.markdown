@@ -2,9 +2,7 @@
 
 This configures an enroled machine to be an enforced IPv4 internet gateway for the connecting machine using OpenVPN.
 
-Currently, only CentOS 7 is supported.
-
-(Previously known as "BlackieOps Roadwarrior Gateway")
+The only officially supported platform is OpenSuse 15/SLES 15.2, however the tasks should be generic enough to work on most GNU/Linux distributions.
 
 ## Usage
 
